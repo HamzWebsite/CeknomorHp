@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cek Nomor Tidak Dikenal - Geolokasi IP</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            display: none;
+        }
+        .info-box {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #e8f4fc;
+            border-left: 4px solid #3498db;
+        }
+        .loading {
+            text-align: center;
+            display: none;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #3498db;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cek Nomor Tidak Dikenal</h1>
+        
+        <div class="form-group">
+            <label for="phoneNumber">Masukkan Nomor Telepon:</label>
+            <input type="text" id="phoneNumber" placeholder="Contoh: +6281234567890" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="ipAddress">Masukkan Alamat IP (opsional):</label>
+            <input type="text" id="ipAddress" placeholder="Contoh: 192.168.1.1">
+        </div>
+        
+        <button id="checkButton">Cek Sekarang</button>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Memproses permintaan...</p>
+        </div>
+        
+        <div class="result" id="result">
+            <h2>Hasil Pengecekan</h2>
+            
+            <div class="info-box" id="numberInfo">
+                <h3>Informasi Nomor Telepon</h3>
+                <p id="numberResult">-</p>
+            </div>
+            
+            <div class="info-box" id="ipInfo">
+                <h3>Informasi Geolokasi IP</h3>
+                <p id="ipResult">-</p>
+            </div>
+            
+            <div class="info-box" id="mapContainer" style="display: none;">
+                <h3>Peta Lokasi</h3>
+                <div id="map" style="height: 300px; width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Disclaimer: Informasi yang ditampilkan adalah perkiraan berdasarkan database publik dan mungkin tidak 100% akurat.</p>
+    </footer>
+
+    <script>
+        document.getElementById('checkButton').addEventListener('click', function() {
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+            const ipAddress = document.getElementById('ipAddress').value.trim();
+            
+            if (!phoneNumber) {
+                alert('Silakan masukkan nomor telepon terlebih dahulu');
+                return;
+            }
+            
+            // Tampilkan loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+            
+            // Simulasikan pengecekan nomor (dalam implementasi nyata, ini akan memanggil API)
+            setTimeout(function() {
+                checkNumber(phoneNumber);
+                
+                // Jika ada IP, cek lokasi IP
+                if (ipAddress) {
+                    checkIPLocation(ipAddress);
+                } else {
+                    document.getElementById('ipInfo').style.display = 'none';
+                    document.getElementById('mapContainer').style.display = 'none';
+                }
+                
+                // Sembunyikan loading dan tampilkan hasil
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('result').style.display = 'block';
+            }, 1500);
+        });
+        
+        function checkNumber(phoneNumber) {
+            // Ini adalah simulasi - dalam implementasi nyata, Anda akan memanggil API pengecekan nomor
+            const countryCodes = {
+                '+62': 'Indonesia',
+                '+1': 'Amerika Serikat/Kanada',
+                '+44': 'Inggris',
+                '+60': 'Malaysia',
+                '+65': 'Singapura'
+            };
+            
+            let country = 'Tidak diketahui';
+            for (const code in countryCodes) {
+                if (phoneNumber.startsWith(code)) {
+                    country = countryCodes[code];
+                    break;
+                }
+            }
+            
+            let provider = 'Tidak diketahui';
+            if (phoneNumber.startsWith('+6281') || phoneNumber.startsWith('+6282') || phoneNumber.startsWith('+6283')) {
+                provider = 'Telkomsel';
+            } else if (phoneNumber.startsWith('+6285')) {
+                provider = 'Indosat';
+            } else if (phoneNumber.startsWith('+6287')) {
+                provider = 'XL';
+            } else if (phoneNumber.startsWith('+6288')) {
+                provider = 'Smartfren';
+            } else if (phoneNumber.startsWith('+6289')) {
+                provider = 'Tri';
+            }
+            
+            const isSpam = Math.random() > 0.7 ? 'Ya (dilaporkan sebagai spam)' : 'Tidak';
+            
+            document.getElementById('numberResult').innerHTML = `
+                <strong>Nomor:</strong> ${phoneNumber}<br>
+                <strong>Negara:</strong> ${country}<br>
+                <strong>Provider:</strong> ${provider}<br>
+                <strong>Dilaporkan sebagai spam:</strong> ${isSpam}<br>
+                <strong>Catatan:</strong> ${getRandomNote()}
+            `;
+        }
+        
+        function checkIPLocation(ipAddress) {
+            // Ini adalah simulasi - dalam implementasi nyata, Anda akan memanggil API geolokasi IP seperti ipapi.co
+            const mockLocations = [
+                {
+                    ip: ipAddress,
+                    city: "Jakarta",
+                    region: "DKI Jakarta",
+                    country: "Indonesia",
+                    postal: "10110",
+                    timezone: "Asia/Jakarta",
+                    org: "PT Telekomunikasi Indonesia",
+                    loc: "-6.2088,106.8456"
+                },
+                {
+                    ip: ipAddress,
+                    city: "Bandung",
+                    region: "Jawa Barat",
+                    country: "Indonesia",
+                    postal: "40111",
+                    timezone: "Asia/Jakarta",
+                    org: "PT Indosat",
+                    loc: "-6.9175,107.6191"
+                },
+                {
+                    ip: ipAddress,
+                    city: "Surabaya",
+                    region: "Jawa Timur",
+                    country: "Indonesia",
+                    postal: "60241",
+                    timezone: "Asia/Jakarta",
+                    org: "PT XL Axiata",
+                    loc: "-7.2575,112.7521"
+                }
+            ];
+            
+            const location = mockLocations[Math.floor(Math.random() * mockLocations.length)];
+            
+            document.getElementById('ipResult').innerHTML = `
+                <strong>Alamat IP:</strong> ${location.ip}<br>
+                <strong>Lokasi:</strong> ${location.city}, ${location.region}, ${location.country}<br>
+                <strong>Kode Pos:</strong> ${location.postal}<br>
+                <strong>Zona Waktu:</strong> ${location.timezone}<br>
+                <strong>Penyedia:</strong> ${location.org}<br>
+                <strong>Koordinat:</strong> ${location.loc}
+            `;
+            
+            // Tampilkan peta (dalam implementasi nyata, gunakan Google Maps API atau Leaflet)
+            document.getElementById('mapContainer').style.display = 'block';
+            document.getElementById('map').innerHTML = `
+                <div style="background-color: #e8f4fc; height: 100%; display: flex; justify-content: center; align-items: center;">
+                    <p style="text-align: center;">
+                        [Peta akan ditampilkan di sini]<br>
+                        Lokasi: ${location.city}, ${location.region}<br>
+                        Koordinat: ${location.loc}
+                    </p>
+                </div>
+            `;
+            
+            document.getElementById('ipInfo').style.display = 'block';
+        }
+        
+        function getRandomNote() {
+            const notes = [
+                "Nomor ini terdaftar dalam database kami sebagai nomor pribadi.",
+                "Nomor ini telah dilaporkan beberapa kali sebagai penipuan.",
+                "Nomor ini terdaftar sebagai nomor bisnis yang valid.",
+                "Tidak ada laporan negatif tentang nomor ini.",
+                "Nomor ini terdaftar di wilayah perkotaan."
+            ];
+            return notes[Math.floor(Math.random() * notes.length)];
+        }
+    </script>
+</body>
+</html>
